@@ -6,4 +6,4 @@ Run it using any C++ IDE (locally). Choose 'Encryption', then select the index o
 It is not recommended to use on real files, just for fun.
 
 
-![project image](TareqAli-CS/fake-virus/images/Encryption-Decryption.png)
+![project image](https://github.com/TareqAli-CS/fake-virus/blob/main/images/Encryption-Decryption.png)
