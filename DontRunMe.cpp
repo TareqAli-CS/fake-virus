@@ -4,15 +4,15 @@
 #include <sstream>
 #include<dirent.h>
 #include<vector>
-#define eKey 6 // constant encryption key 
-#define recoveryPlan "admin_admin" // recovery key 
-								   // if you dont remember the constant you can use it 
+#define eKey 6 // constant encryption key
+#define recoveryPlan "admin_admin" // recovery key
+								   // if you dont remember the constant you can use it
 using namespace std;
 bool encrypt( string fileName);
-bool decrypt( string fileName); 
+bool decrypt( string fileName);
 string dKey;// global so you just enter the password one time // decryption string key
 int idKey; // decryption int key // for add int to character to decrypt the cipher text
-int main() 
+int main()
 {
 	struct dirent *d;
     DIR *dr;
@@ -20,15 +20,15 @@ int main()
 	string option;
 	vector<string>fileName;
 	cout<<"Press ( e ) to Encryption , ( d ) to Decryption or ( EXIT ) to exit "<<endl;
-	
+
 	cin >> option;
-	if(option=="tareq")
+	if(option=="d")
 	option="d";
 	else
 	option="e";
 	if(option=="exit" || option=="exit")
 	return 0;
-	if(option != "e" && option != "d") 
+	if(option != "e" && option != "d")
 	{
 		cout << "invalid option try again" << endl;
 		return 0;
@@ -38,54 +38,61 @@ int main()
 	if(dr!=NULL)
     {
        // cout<<"List of Files & Folders:-\n";
-        
+
         for(d=readdir(dr); d!=NULL; d=readdir(dr),i++)
         {
         	fileName.push_back(d->d_name);
             cout<<i<<"- "<<d->d_name<<endl;
         }
-        
-        
+
+
         closedir(dr);
     }
     else
         cout<<"\nError Occurred!";
     cout<<endl;
 
-	if(option == "e") 
+    int specificFile = -1;
+    cout<<"Enter the file index to ";
+    if(option == "e")
+        cout<<"Encrypt: ";
+    else
+        cout<<"Decrypt: ";
+    cin>>specificFile;
+	if(option == "e")
 	{
-		for(int i=0;i<fileName.size();i++)
-		encrypt(fileName[i]);
-		
+		//for(int i=0;i<fileName.size();i++)
+		encrypt(fileName[specificFile]);
+
 	}
-	
+
 	else
 	{
-		cout<<"enter decrypt key: ";
+		cout<<"Enter decrypt key (enter 6 if you didn't change the encryption key): ";
 		cin>>dKey;
-		for(int i=0;i<fileName.size();i++)
-		decrypt(fileName[i]);
+		//for(int i=0;i<fileName.size();i++)
+		decrypt(fileName[specificFile]);
 	}
-	
-	
-	
-	
+
+
+
+
 return 0;
 }
 bool encrypt(string fileName) {
 	fstream fileToEncrypt;
 	ofstream encryptedFile;
-	string extension = ".enc"; 
+	string extension = ".enc";
 	char fileN[fileName.length()];
 	strcpy(fileN,fileName.c_str());// copy the name so i can remove the file..
-	
+
 	fileToEncrypt.open(fileName.c_str(),ios::binary | ios::in); // c_str to open the string as file
 	char data;
 
-	if(fileToEncrypt.is_open()) 
+	if(fileToEncrypt.is_open())
 	{
 		encryptedFile.open(fileName.append(extension).c_str(),ios::binary | ios::out);
-		while(fileToEncrypt >> noskipws >> data) 
+		while(fileToEncrypt >> noskipws >> data)
 		{
 			data +=  eKey;
 			encryptedFile << data;
@@ -105,45 +112,45 @@ bool encrypt(string fileName) {
 bool decrypt( string fileName) {
 	fstream fileToDecrypt;
 	ofstream decryptedFile;
-	char fileN[fileName.length()]; 
+	char fileN[fileName.length()];
 	strcpy(fileN,fileName.c_str());
 	stringstream intValue(dKey);// convert string to int
 	intValue>>idKey;
-		if(dKey==recoveryPlan) // key recovery plan    
+		if(dKey==recoveryPlan) // key recovery plan
 		idKey=eKey;           // if you enter the correct recovery key
 							 // int key will be change to constant key automatically
-	
+
 // if you enter wrong key program will decryption with wrong key
 // so if someone else use the program and don't know the key or recovery one
-// he is will not benefit	
-	
+// he is will not benefit
+
 	fileToDecrypt.open(fileName.c_str(),ios::binary | ios::in);
 	char data;
-	if(fileToDecrypt.is_open()) 
+	if(fileToDecrypt.is_open())
 	{
 		char copyFileName[fileName.length()];
-		 strcpy(copyFileName,fileName.c_str()); // convert from string to char // 
-		
+		 strcpy(copyFileName,fileName.c_str()); // convert from string to char //
+
 		 char *ptr=&copyFileName[fileName.length()];
 		 while(*ptr!='.')
 	 	*ptr--;
 	 	*ptr=NULL;
-	 	
-	 	
+
+
 		 fileName=copyFileName;
 		decryptedFile.open(fileName.c_str(),ios::binary | ios::out);
-	
-		
-		while(fileToDecrypt >>  noskipws >> data) 
+
+
+		while(fileToDecrypt >>  noskipws >> data)
 		{
-			data -=  idKey;  
+			data -=  idKey;
 			decryptedFile << data;
-			
+
 		}
 		decryptedFile.close();
 		fileToDecrypt.close();
 		 cout<<"Decrypted "<<fileName<<" Succeeded..." <<  endl;
-	 
+
 	 remove (fileN); // delete the encrypt file
 		return true;
 	}
